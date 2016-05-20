@@ -57,11 +57,11 @@ func main() {
 	}
 	defer rows.Close()
 	
-	for rows.Next() {
-		err = rows.Scan(&country)
-		if err != nil {
-			log.Fatal(err)
-		}
+	rows.Next()
+	err = rows.Scan(&country)
+	if err != nil {
+		log.Fatal(err)
+	} else {
 		fmt.Printf("%s resolves to: %s\n",ip_s, country)
 	}
 	err = rows.Err()
