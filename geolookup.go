@@ -38,18 +38,16 @@ func main() {
 		return
 	}
 
-	db,err :=  sql.Open("sqlite3", "ip2nation.db")
+	db, err :=  sql.Open("sqlite3", "ip2nation.db")
 	if(db == nil) {
 		fmt.Printf("Unable to open db error %s\n", err)
 	} else {
 		fmt.Printf("->DB: http://www.ip2nation.com\n\n")
 	}
 
-	strQuery := ""
-	
 	var country string
 
-	strQuery = fmt.Sprintf("SELECT c.country FROM ip2nationCountries c, ip2nation i WHERE i.ip < %d AND c.code = i.country ORDER BY i.ip DESC LIMIT 0,1;", ip_i)
+	strQuery := fmt.Sprintf("SELECT c.country FROM ip2nationCountries c, ip2nation i WHERE i.ip < %d AND c.code = i.country ORDER BY i.ip DESC LIMIT 0,1;", ip_i)
 	
 	rows, err := db.Query(strQuery)
 	if err != nil {
@@ -62,7 +60,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	} else {
-		fmt.Printf("%s resolves to: %s\n",ip_s, country)
+		fmt.Printf("%s resolves to: %s\n", ip_s, country)
 	}
 	err = rows.Err()
 	if err != nil {
