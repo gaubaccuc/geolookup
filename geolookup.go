@@ -1,5 +1,7 @@
-// geolookup.go // 
-// Messy code to lookup an ip in a sqlite database // 
+//
+// geolookup.go
+// Messy code to lookup an ip in a sqlite database
+//
 
 package main
 
