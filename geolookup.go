@@ -43,7 +43,7 @@ func IsPrivateIP(ip net.IP) bool {
 // - Clean up the code
 func main() {
 	var ip_i int64 = 0
-	var banner string = "Geolookup v0.01 by Gau Bac Cuc"
+	var banner string = "Geolookup v0.02 by Gau Bac Cuc"
 	
 	fmt.Println(banner)
 	
