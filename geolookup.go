@@ -1,4 +1,6 @@
-// geolookup.go // // Messy code to lookup an ip in a sqlite database // 
+// geolookup.go // 
+// Messy code to lookup an ip in a sqlite database // 
+
 package main
 
 import (
@@ -80,17 +82,18 @@ func main() {
 		fmt.Printf("Database - http://www.ip2nation.com\n\n")
 	}
 
-	var country string
-
 	strQuery := fmt.Sprintf("SELECT c.country FROM ip2nationCountries c, ip2nation i WHERE i.ip < %d AND c.code = i.country ORDER BY i.ip DESC LIMIT 0,1;", ip_i)
 	
 	rows, err := db.Query(strQuery)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer rows.Close()
 	
+	defer rows.Close()
 	rows.Next()
+
+	var country string
+
 	err = rows.Scan(&country)
 	if err != nil {
 		log.Fatal(err)
