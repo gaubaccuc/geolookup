@@ -1,7 +1,4 @@
-// geolookup.go
-//
-// Messy code to lookup an ip in a sqlite database
-//
+// geolookup.go // // Messy code to lookup an ip in a sqlite database // 
 package main
 
 import (
@@ -11,6 +8,7 @@ import (
 	"log"
 	"math/big"
 	"net"
+	"os"
 )
 
 // Inet_Aton converts an IPv4 net.IP object to a 64 bit integer.
@@ -20,29 +18,66 @@ func Inet_Aton(ip net.IP) int64 {
 	return ipv4Int.Int64()
 }
 
+// Checks ip to see if it falls within reserved ip range
+func IsPrivateIP(ip net.IP) bool {
+	cidr := []string { "0.0.0.0/8", "10.0.0.0/8", "100.64.0.0/10",
+			   "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24",
+			   "192.0.0.0/24", "192.0.2.0/24", "192.88.99.0/24",
+			   "192.168.0.0/16", "198.18.0.0/15", "198.51.100.0/24",
+			   "203.0.113.0/24", "224.0.0.0/4", "240.0.0.0/4" }
+
+	for i := 0; i < len(cidr); i++ {
+		_, ipn,_ := net.ParseCIDR("0.0.0.0/8")
+		if ipn.Contains(ip) {
+			return true
+		} 
+	}
+	return false
+}
+
 // TODO
 // - Clean up the code
-// - Add user input instead of static variable
 func main() {
 	var ip_i int64 = 0
-	ip_s := "8.8.8.8"
-
 	var banner string = "Geolookup v0.01 by Gau Bac Cuc"
-
+	
 	fmt.Println(banner)
-		
+	
+	if(len(os.Args) < 2) {
+		fmt.Println("Must supply an ip address")
+		return
+	}
+
+	ip_s := os.Args[1]
+
 	ip := net.ParseIP(ip_s)
 	if(ip != nil) {
 		ip_i = Inet_Aton(ip)
 	} else {
+		fmt.Println("Invalid ip address")
 		return
 	}
 
+	// Check the ip to make sure its valid
+	if ip.IsLoopback() {
+		fmt.Printf("Error: %s is a loopback address\n", ip_s)
+		return
+	}
+	if ip.IsMulticast() {
+		fmt.Printf("Error: %s is a multicast address\n", ip_s)
+		return
+	}
+	if IsPrivateIP(ip) {
+	        fmt.Printf("Error: %s is a reserved address\n", ip_s)
+                return
+	}
+
+	// Try to open the database
 	db, err :=  sql.Open("sqlite3", "ip2nation.db")
 	if(db == nil) {
 		fmt.Printf("Unable to open db error %s\n", err)
 	} else {
-		fmt.Printf("->DB: http://www.ip2nation.com\n\n")
+		fmt.Printf("Database - http://www.ip2nation.com\n\n")
 	}
 
 	var country string
